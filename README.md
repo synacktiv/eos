@@ -2,23 +2,33 @@
 
 `EOS` loots information from a Symfony target in debug mode:
 
-| Section | Description |
-| --- | --- |
-| General | Get general information about the target. |
-| Phpinfo | Extract Symfony environment variables from the exposed phpinfo(). |
-| Routes | Get the list of registered routes. |
-| Request logs | Look for credentials in POST request logs. |
+| Section       | Description                                                                 |
+| ------------- | --------------------------------------------------------------------------- |
+| General       | Get general information about the target.                                   |
+| Phpinfo       | Extract Symfony environment variables from the exposed phpinfo().           |
+| Routes        | Get the list of registered routes.                                          |
+| Request logs  | Look for credentials in POST request logs.                                  |
 | Project files | Retrieve project files (configuration, database, etc.) based on a wordlist. |
-| Sources | Extract the application source code. |
-| Cookies | Craft Remember Me cookies. |
+| Sources       | Extract the application source code.                                        |
+| Cookies       | Craft Remember Me cookies.                                                  |
 
 More info at https://www.synacktiv.com/posts/pentest/looting-symfony-with-eos.html.
 
 ## Installation
 
+### Standard
+
 ```bash
 $ git clone https://github.com/Synacktiv/eos
 $ python3 -m pip install --user ./eos
+```
+
+### Docker
+
+```bash
+$ git clone https://github.com/Synacktiv/eos
+$ cd eos
+$ docker build . -f eos.Dockerfile -t eos
 ```
 
 ## Usage
@@ -203,4 +213,10 @@ $ eos scan http://localhost --output results
 
 [+] Generated tokens: 5894a5 f68efa
 [+] Scan completed in 0:00:13
+```
+
+### Example usage with Docker
+
+```bash
+$ docker run --rm -v /tmp/eos:/tmp/res eos eos scan http://localhost/ --output /tmp/res
 ```
