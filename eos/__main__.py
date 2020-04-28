@@ -8,6 +8,8 @@ from pathlib import Path
 from base64 import b64decode
 
 from requests import Session
+from requests.packages.urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
 
 from eos import EOS, __version__
 from eos.core import Symfony, Engine, RememberMe
@@ -122,6 +124,7 @@ def main():
     sub = p.add_subparsers(dest='command', required=True)
     common = ArgumentParser(add_help=False)
     common.add_argument('url', help='target URL')
+    common.add_argument('-k', '--insecure', action='store_false', help='no SSL certificate verification')
     common.add_argument('-H', '--headers', metavar='Header: value', nargs='+', type=combo, default={},
                         help='custom HTTP headers')
     common.set_defaults(output=None, timestamps=None)
@@ -182,9 +185,12 @@ def main():
             sys.exit(1)
 
     # Requests session
-    args.session = Session()
-    args.session.headers = {'User-Agent': 'Mozilla/5.0'}
-    args.session.headers.update(dict(args.headers))
+    disable_warnings(category=InsecureRequestWarning)
+    session = Session()
+    session.headers = {'User-Agent': 'Mozilla/5.0'}
+    session.headers.update(dict(args.headers))
+    session.verify = args.insecure
+    args.session = session
 
     # Run
     try:
