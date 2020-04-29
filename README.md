@@ -14,6 +14,17 @@
 
 More info at https://www.synacktiv.com/posts/pentest/looting-symfony-with-eos.html.
 
+Note that this tool does not exploit any Symfony vulnerability. The profiler is
+a useful component for developers and `EOS` simply takes advantage on
+misconfigured Symfony applications. In fact, the profiler [documentation][1]
+prominently warns developers:
+
+> Never enable the profiler in production environments as it will lead to major security vulnerabilities in your project.
+
+Thanks to all the Symfony team for their awesome work!
+
+[1]: https://symfony.com/doc/current/profiler.html
+
 ## Installation
 
 ```bash
