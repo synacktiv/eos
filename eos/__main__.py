@@ -171,7 +171,7 @@ def main():
     cookies.add_argument('-s', '--secret', metavar='secret', required=True, help="the application's remember_me secret")
     cookies.add_argument('-d', '--delimiter', metavar='char', default=RememberMe.delimiter,
                          help='the cookie delimiter (default: "{}")'.format(RememberMe.delimiter))
-    cookies.set_defaults(handler=CLI.cookies, output=None, timestamps=None, headers=[])
+    cookies.set_defaults(handler=CLI.cookies, output=None, timestamps=None, headers=[], insecure=None)
 
     # Parse
     args = p.parse_args()
