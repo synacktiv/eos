@@ -4,7 +4,7 @@ import re
 from io import BytesIO
 from pathlib import Path
 
-from lxml import etree
+from defusedxml import minidom
 from requests import Request
 
 from eos.plugins import AbstractPlugin
@@ -111,14 +111,24 @@ class Plugin(AbstractPlugin):
         :return: list of source file paths relative to the application root
         """
 
-        tree = etree.parse(BytesIO(data.encode()))
-        root = tree.getroot()
-        services = root.findall('.//service', namespaces=root.nsmap)
-        arguments = root.findall('.//argument', namespaces=root.nsmap)
+        dom = minidom.parse(BytesIO(data.encode()))
+        services = dom.getElementsByTagName('service')
+        arguments = dom.getElementsByTagName('argument')
 
-        classes = {service.attrib.get('class') for service in services}
-        classes.update(argument.attrib.get('id', '').split(':')[0] for argument in arguments)
-        classes.update(argument.attrib.get('key', '').split(':')[0] for argument in arguments)
+        classes = set()
+        for service in services:
+            cls = service.attributes.get('class')
+            if cls:
+                classes.add(cls.value)
+
+        for argument in arguments:
+            id = argument.attributes.get('id')
+            key = argument.attributes.get('key')
+            if id:
+                classes.add(id.value.split(':')[0])
+            if key:
+                classes.add(key.value.split(':')[0])
+
         classes = set(filter(lambda ns: ns and ns.startswith(self.symfony.namespace + '\\'), classes))
 
         return [self.class_to_path(cls, self.symfony.root) for cls in classes]
