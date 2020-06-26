@@ -111,7 +111,7 @@ class Plugin(AbstractPlugin):
         :return: list of source file paths relative to the application root
         """
 
-        dom = minidom.parse(BytesIO(data.encode()))
+        dom = minidom.parse(BytesIO(data.strip().encode()))
         services = dom.getElementsByTagName('service')
         arguments = dom.getElementsByTagName('argument')
 

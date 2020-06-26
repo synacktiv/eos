@@ -88,7 +88,7 @@ class Plugin(AbstractPlugin):
         if index is not None:
             self.symfony.files[self.cache] = index
             rows = csv.reader(StringIO(index))
-            logs = list(row for row in rows if row[2] == 'POST')
+            logs = list(row for row in rows if row and row[2] == 'POST')
         else:
             logs = self.list(self.limit)
 
