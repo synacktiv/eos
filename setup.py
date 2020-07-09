@@ -8,6 +8,9 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    requirements = [line.strip() for line in f.readlines()]
+
 
 setup(
     name='eos',
@@ -30,11 +33,7 @@ setup(
     keywords='scanner symfony eos enemies-of-symfony',
     packages=find_packages(),
     python_requires='>=3.5, <4',
-    install_requires=[
-        'requests',
-        'beautifulsoup4',
-        'lxml',
-    ],
+    install_requires=requirements,
     package_data={
         'eos': ['wordlist.txt'],
     },
