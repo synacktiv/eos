@@ -35,7 +35,7 @@ class Plugin(AbstractPlugin):
         """
 
         # Perform request, and parse it
-        r = self.symfony.profiler.get(self.token, params={'panel': 'config'})
+        r = self.symfony.profiler.get('latest', params={'panel': 'config'})
         soup = self.parse(r.text)
 
         # Version

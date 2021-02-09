@@ -43,18 +43,17 @@ class EOS(Base):
         """List of previously issued requests."""
         return self.symfony.requests
 
-    def run(self, check_only=False, wordlists=None, threads=10):
+    def run(self, wordlists=None, threads=10):
         """
         Run scan.
 
-        1. Ensure the target is reachable and in debug mode
+        1. Start engine
         2. Load plugins and run them
         3. Output tokens generated from issued requests
 
         Scans can be performed in aggressive mode where aggressive plugins will be run.
         The engine can be configured using a different wordlists and a specific number of threads.
 
-        :param check_only: only perform checks on target, do not run plugins
         :param wordlists: wordlists file or directory
         :param threads: number of workers to run simultaneously
         """
@@ -64,21 +63,15 @@ class EOS(Base):
         self.log.info('%s is a great day', start)
         wordlists = wordlists or self.wordlists
 
-        # Checks
-        print()
-        self.check()
-
-        # Stop if only check
-        if not check_only:
-            # Start engine, load and run plugins
-            engine = Engine(threads, session=self.session)
-            engine.start()
-            try:
-                options = dict(wordlists=wordlists, output=self.output)
-                manager = PluginManager(symfony=self.symfony, engine=engine, **options)
-                manager.run()
-            finally:
-                engine.stop()
+        # Start engine, load and run plugins
+        engine = Engine(threads, session=self.session)
+        engine.start()
+        try:
+            options = dict(wordlists=wordlists, output=self.output)
+            manager = PluginManager(symfony=self.symfony, engine=engine, **options)
+            manager.run()
+        finally:
+            engine.stop()
 
         if self.symfony.files and self.output:
             print()

@@ -37,16 +37,32 @@ class Plugin(AbstractPlugin):
         prevent parameterized routes from matching it.
         """
 
+        token = None
+
+        # Find 404 in cache
+        filters = lambda token, ip, method, url, timestamp, x, code: code == 404
+        logs = self.symfony.profiler.logs(filters, self.symfony.cache, refresh=False)
+
         # Trigger and ensure a 404
-        self.log.debug('Triggering a 404 error')
-        rand = '/'.join(choice(ascii_lowercase) for _ in range(12))
-        r = self.symfony.get(rand)
-        if r.status_code != 404:
-            self.log.error('Target responded with status code %d!', r.status_code)
+        if not logs:
+            self.log.debug('Triggering a 404 error')
+            rand = '/'.join(choice(ascii_lowercase) for _ in range(12))
+            r = self.symfony.get(rand)
+            token = r.token
+            if not r.token:
+                mark = self.symfony.url(rand)
+                filters = lambda token, ip, method, url, timestamp, x, code: url == mark
+                logs = self.symfony.profiler.logs(filters, self.symfony.cache, refresh=True)
+
+        if not logs and not token:
+            self.log.warning('Could not find any suitable 404 response')
             return
 
+        if not token:
+            token = logs[-1][0]
+
         # Check that no route has matched
-        r = self.symfony.profiler.get(r.token, params={'panel': 'router'})
+        r = self.symfony.profiler.get(token, params={'panel': 'router'})
         soup = self.parse(r.text)
         label = soup.find('span', class_='label', string='Matched route')
         route = label.find_previous('span', class_='value').text

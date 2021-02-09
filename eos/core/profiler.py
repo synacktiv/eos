@@ -4,6 +4,8 @@ Symfony Profiler module.
 Contains a Profiler class for communicating with the Symfony profiler.
 """
 
+import csv
+from io import StringIO
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -22,6 +24,7 @@ class Profiler(Base):
     """
 
     path = '_profiler'
+    cache_path = 'profiler/index.csv'
 
     def __init__(self, url, session=None):
         """
@@ -32,6 +35,7 @@ class Profiler(Base):
 
         self._url = urljoin(url + '/', self.path)
         self.session = session or Session()
+        self._cache = None
 
     def get(self, token='', **kwargs):
         """
@@ -85,3 +89,16 @@ class Profiler(Base):
     def url(self, token=''):
         """URL builder."""
         return urljoin(self._url + '/' if token else self._url, token)
+
+    def cache(self, symfony_cache=None, refresh=True):
+        if refresh or self._cache is None:
+            cache_path = str(Path(symfony_cache, self.cache_path))
+            index = self.open(cache_path)
+            self._cache = list(csv.reader(StringIO(index)))
+        return self._cache
+
+    def logs(self, filters=None, symfony_cache=None, refresh=True):
+        all = lambda token, ip, method, url, timestamp, x, code: True
+        filters = filters or all
+        wrapper = lambda row: filters(*row)
+        return list(filter(wrapper, self.cache(symfony_cache, refresh)))

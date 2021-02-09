@@ -1,9 +1,6 @@
 """Request logs EOS plugin."""
 
 import re
-import csv
-from io import StringIO
-from pathlib import Path
 from datetime import datetime
 from urllib.parse import parse_qs
 
@@ -65,7 +62,6 @@ class Plugin(AbstractPlugin):
     """
 
     name = 'Request logs'
-    _cache = 'profiler/index.csv'
 
     usernames = ['user', 'login', 'usr', 'email']
     """List of possible username parameter keys."""
@@ -84,13 +80,8 @@ class Plugin(AbstractPlugin):
         """
 
         # Get list of POST requests
-        index = self.symfony.profiler.open(self.cache)
-        if index is not None:
-            self.symfony.files[self.cache] = index
-            rows = csv.reader(StringIO(index))
-            logs = list(row for row in rows if row and row[2] == 'POST')
-        else:
-            logs = self.list(self.limit)
+        filters = lambda token, ip, method, url, timestamp, x, code: method == 'POST'
+        logs = self.symfony.profiler.logs(filters, self.symfony.cache, refresh=False)
 
         # No POST requests
         if not logs:
@@ -149,10 +140,6 @@ class Plugin(AbstractPlugin):
             self.log.warning('Found the following credentials with no valid session:')
             for user in users_without_session:
                 self.log.warning('  %s: %s', user.name, user.password)
-
-    @property
-    def cache(self):
-        return str(Path(self.symfony.cache, self._cache))
 
     def list(self, limit, method='POST'):
         """

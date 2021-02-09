@@ -66,7 +66,8 @@ class Worker(Thread, Base):
         :param request: the unprepared request to process
         """
 
-        response = self.session.send(request.prepare())
+        response = self.session.request(
+            method=request.method, url=request.url, params=request.params, data=request.data)
         response.request = request
         self.log.debug('[%d] %s', response.status_code, response.url)
         self.results.append(response)

@@ -20,7 +20,6 @@ from eos.plugins.sources import Plugin as Sources
 
 scan_examples = [
     'eos scan http://localhost',
-    'eos scan -v -t 4 http://localhost',
     "eos scan --headers 'Cookie: foo=bar; john=doe' 'User-Agent: EOS' -- http://localhost",
 ]
 
@@ -45,7 +44,7 @@ class CLI:
     def scan(cls, args):
         """Scan handler."""
         eos = EOS(url=args.url, output=args.output, session=args.session)
-        eos.run(check_only=args.check_only, threads=args.threads)
+        eos.run(threads=args.threads)
 
     @classmethod
     def sources(cls, args):
@@ -140,7 +139,6 @@ def main():
     scan = sub.add_parser('scan', component='Scanner', help='perform a full scan', examples=scan_examples,
                           parents=[common, output, threads])
     scan.add_argument('--timestamps', action='store_true', help='log with timestamps')
-    scan.add_argument('--check-only', action='store_true', help='only check if target is vulnerable')
     scan.set_defaults(handler=CLI.scan)
 
     # Sources
