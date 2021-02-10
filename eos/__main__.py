@@ -124,7 +124,7 @@ def main():
     common = ArgumentParser(add_help=False)
     common.add_argument('url', help='target URL')
     common.add_argument('-k', '--insecure', action='store_false', help='no SSL certificate verification')
-    common.add_argument('-H', '--headers', metavar='Header: value', nargs='+', type=combo, default={},
+    common.add_argument('-H', '--headers', metavar='Header: value', action='append', type=combo, default=[],
                         help='custom HTTP headers')
     common.set_defaults(output=None, timestamps=None)
 
