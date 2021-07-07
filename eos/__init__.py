@@ -11,5 +11,3 @@ __banner__ = """
   ███████╗╚██████╔╝███████║  Enemies Of Symfony
   ╚══════╝ ╚═════╝ ╚══════╝  v{}
 """.format(__version__)
-
-from eos.core.eos import EOS

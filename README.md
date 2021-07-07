@@ -27,6 +27,8 @@ Thanks to all the Symfony team for their awesome work!
 
 ## Installation
 
+Tested on Python >= 3.7.
+
 ```bash
 $ git clone https://github.com/Synacktiv/eos
 $ python3 -m pip install --user ./eos
@@ -60,7 +62,7 @@ optional arguments:
 
 examples:
   eos scan http://localhost
-  eos scan --headers 'Cookie: foo=bar; john=doe' 'User-Agent: EOS' -- http://localhost
+  eos scan -H 'Cookie: foo=bar; john=doe' -H 'User-Agent: EOS' http://localhost
   eos get http://localhost config/services.yaml
   eos cookies -u jane_admin -H '$2y$13$IMalnQpo7xfZD5FJGbEadOcqyj2mi/NQbQiI8v2wBXfjZ4nwshJlG' -s 67d829bf61dc5f87a73fd814e2c9f629
 ```

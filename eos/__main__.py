@@ -11,8 +11,8 @@ from requests import Session
 from requests.packages.urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 
-from eos import EOS, __version__
-from eos.core import Symfony, Engine, RememberMe
+from eos import __version__
+from eos.core import EOS, Symfony, Engine, RememberMe
 from eos.utils import log, ArgumentParser, combo
 from eos.plugins.info import Plugin as Info
 from eos.plugins.logs import Plugin as Logs
@@ -20,7 +20,7 @@ from eos.plugins.sources import Plugin as Sources
 
 scan_examples = [
     'eos scan http://localhost',
-    "eos scan --headers 'Cookie: foo=bar; john=doe' 'User-Agent: EOS' -- http://localhost",
+    "eos scan -H 'Cookie: foo=bar; john=doe' -H 'User-Agent: EOS' http://localhost",
 ]
 
 get_examples = [
@@ -124,7 +124,7 @@ def main():
     common = ArgumentParser(add_help=False)
     common.add_argument('url', help='target URL')
     common.add_argument('-k', '--insecure', action='store_false', help='no SSL certificate verification')
-    common.add_argument('-H', '--headers', metavar='Header: value', action='append', type=combo, default=[],
+    common.add_argument('-H', '--header', metavar='Header: value', action='append', type=combo, default=[],
                         help='custom HTTP headers')
     common.set_defaults(output=None, timestamps=None)
 
@@ -160,6 +160,8 @@ def main():
     # Cookies
     cookies = sub.add_parser('cookies', component='Cookie maker', examples=cookies_examples,
                              help='craft remember me cookies with a great lifetime')
+    cookies.set_defaults(header=[])
+                          
     cookies.add_argument('-c', '--class', metavar='cls', default=RememberMe.cls,
                          help='user class (default: {})'.format(RememberMe.cls))
     cookies.add_argument('-u', '--username', metavar='user', required=True, help='the user to impersonate')
@@ -186,7 +188,7 @@ def main():
     disable_warnings(category=InsecureRequestWarning)
     session = Session()
     session.headers = {'User-Agent': 'Mozilla/5.0'}
-    session.headers.update(dict(args.headers))
+    session.headers.update(dict(args.header))
     session.verify = args.insecure
     args.session = session
 
