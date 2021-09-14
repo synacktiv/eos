@@ -83,7 +83,7 @@ class PluginManager(Base):
     """
 
     package = __name__
-    repositories = [Path(__file__).parent]
+    repositories = [str(Path(__file__).parent)]
 
     def __init__(self, symfony, engine, load=True, **options):
         """
