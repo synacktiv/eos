@@ -139,7 +139,7 @@ class Symfony(Base):
 
         if self.version <= '4.1':
             container = f'{root}{env}{debug}ProjectContainer'
-        elif self.version <= '4.4':
+        elif self.version < '4.5':
             container = f'{root}{cls}{env}{debug}Container'
         else:
             container = f'{cls}{env}{debug}Container'
