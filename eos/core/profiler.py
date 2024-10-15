@@ -100,5 +100,5 @@ class Profiler(Base):
     def logs(self, filters=None, symfony_cache=None, refresh=True):
         all = lambda token, ip, method, url, timestamp, x, code: True
         filters = filters or all
-        wrapper = lambda row: filters(*row)
+        wrapper = lambda row: len(row) == 7 and filters(*row)
         return list(filter(wrapper, self.cache(symfony_cache, refresh)))
